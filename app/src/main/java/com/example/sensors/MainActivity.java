@@ -23,15 +23,18 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
-    private Sensor mAccelerometer;
     private SensorManager sensorManager;
+    private Sensor mAccelerometer;
     private Sensor mProximity;
+
+    private CameraManager mCameraManager;
+    private String mCameraId;
+
     private TextView tvPositionx;
     private TextView tvPositiony;
     private TextView tvPositionz;
     private TextView positionsensor;
-    private CameraManager mCameraManager;
-    private String mCameraId;
+
     private static final float SHAKE_THRESHOLD_GRAVITY = 1.7F;
     private static final int SENSOR_SENSITIVITY = 4;
 
@@ -43,62 +46,62 @@ public class MainActivity extends AppCompatActivity {
 
         public void onSensorChanged(SensorEvent sensorEvent) {
 
-            float x = 0;
-            float y = 0;
-            float z = 0;
+            float axex = 0;
+            float axey = 0;
+            float axez = 0;
 
 
-            LinearLayout bglinear = findViewById(R.id.mainview);
+            LinearLayout linearl = findViewById(R.id.mainview);
 
 
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                x = sensorEvent.values[0];
-                y = sensorEvent.values[1];
-                z = sensorEvent.values[2];
+                axex = sensorEvent.values[0];
+                axey = sensorEvent.values[1];
+                axez = sensorEvent.values[2];
 
-                if (x < 5 && x > -5) {
-                    bglinear.setBackgroundColor(Color.BLACK);
-                } else if (x > 5) {
-                    bglinear.setBackgroundColor(Color.RED);
-                } else if (x < -5) {
-                    bglinear.setBackgroundColor(Color.GREEN);
-                }
-
-                if (z > 1) {
+                if (axez > 1) {
                     tvPositionz.setText("avant");
                 }
 
-                if (z < 0) {
+                if (axez < 0) {
                     tvPositionz.setText("arriere");
                 }
 
-                if (x < 0) {
+                if (axex < 0) {
                     tvPositionx.setText("droite");
                 }
 
-                if (x > 0) {
+                if (axex > 0) {
                     tvPositionx.setText("gauche");
                 }
 
-                if (y < 0) {
+                if (axey < 0) {
                     tvPositiony.setText("bas");
                 }
 
-                if (y > 0) {
+                if (axey > 0) {
                     tvPositiony.setText("haut");
                 }
             }
 
-            float gX = x / SensorManager.GRAVITY_EARTH;
-            float gY = y / SensorManager.GRAVITY_EARTH;
-            float gZ = z / SensorManager.GRAVITY_EARTH;
+            float gX = axex / SensorManager.GRAVITY_EARTH;
+            float gY = axey / SensorManager.GRAVITY_EARTH;
+            float gZ = axez / SensorManager.GRAVITY_EARTH;
 
-            float gForce = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
+            float intensity = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
-            if (gForce > SHAKE_THRESHOLD_GRAVITY) {
+            if (intensity > SHAKE_THRESHOLD_GRAVITY) {
                 flashLight(true);
             } else
                 flashLight(false);
+
+            if (intensity > 2) {
+                linearl.setBackgroundColor(Color.RED);
+            } else if (axex > 1.5) {
+                linearl.setBackgroundColor(Color.GREEN);
+            } else {
+                linearl.setBackgroundColor(Color.BLACK);
+            }
 
             if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 positionsensor.setText("test");
